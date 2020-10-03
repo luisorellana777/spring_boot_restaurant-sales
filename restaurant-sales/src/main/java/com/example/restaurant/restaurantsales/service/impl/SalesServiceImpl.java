@@ -1,6 +1,8 @@
 package com.example.restaurant.restaurantsales.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.restaurant.restaurantsales.config.ConfigurationValues;
-import com.example.restaurant.restaurantsales.dto.AmountDto;
 import com.example.restaurant.restaurantsales.dto.SaleDto;
 import com.example.restaurant.restaurantsales.exception.DataIntegrityException;
 import com.example.restaurant.restaurantsales.service.SaleService;
@@ -34,6 +35,32 @@ public class SalesServiceImpl implements SaleService {
 	public ResponseEntity<Object> pullSales() {
 		try {
 
+			List<SaleDto> salesDto = new ArrayList<SaleDto>();
+			while (true) {
+
+				SaleDto receiveAndConvert = (SaleDto) rabbitTemplate
+						.receiveAndConvert(configurationValues.getQueueName());
+
+				if (Objects.isNull(receiveAndConvert))
+					break;
+
+				salesDto.add(receiveAndConvert);
+				log.info("{}", receiveAndConvert);
+
+			}
+
+			return new ResponseEntity<>(salesDto, HttpStatus.OK);
+
+		} catch (Exception ex) {
+
+			throw new DataIntegrityException(ex.getMessage());
+		}
+	}
+
+	@Override
+	public ResponseEntity<Object> pullSale() {
+		try {
+
 			SaleDto receiveAndConvert = (SaleDto) rabbitTemplate.receiveAndConvert(configurationValues.getQueueName());
 			log.info("{}", receiveAndConvert);
 			return new ResponseEntity<>(receiveAndConvert, HttpStatus.OK);
@@ -48,7 +75,14 @@ public class SalesServiceImpl implements SaleService {
 	public ResponseEntity<Object> pushSales(List<SaleDto> salesDto) {
 		try {
 
-			return null;
+			salesDto.forEach(saleDto -> {
+
+				saleDto.setAmounts(saleCalculator.calculateAmounts(saleDto));
+				rabbitTemplate.convertAndSend(configurationValues.getQueueName(), saleDto);
+			});
+
+			return new ResponseEntity<>("{ \"mensaje\" : \"Ventas Almacenadas en Cola\"", HttpStatus.ACCEPTED);
+
 		} catch (Exception ex) {
 
 			throw new DataIntegrityException(ex.getMessage());
@@ -59,8 +93,7 @@ public class SalesServiceImpl implements SaleService {
 	public ResponseEntity<Object> pushSale(SaleDto saleDto) {
 		try {
 
-			AmountDto calculatedAmounts = saleCalculator.calculateAmounts(saleDto);
-			saleDto.setAmounts(calculatedAmounts);
+			saleDto.setAmounts(saleCalculator.calculateAmounts(saleDto));
 			rabbitTemplate.convertAndSend(configurationValues.getQueueName(), saleDto);
 
 			return new ResponseEntity<>("{ \"mensaje\" : \"Venta Almacenada en Cola\"", HttpStatus.ACCEPTED);

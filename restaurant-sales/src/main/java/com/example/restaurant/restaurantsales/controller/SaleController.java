@@ -20,6 +20,12 @@ public class SaleController {
 	@Autowired
 	private SaleService saleService;
 
+	@GetMapping("/sale")
+	public ResponseEntity<Object> pullSale() {
+
+		return saleService.pullSale();
+	}
+
 	@GetMapping("/sales")
 	public ResponseEntity<Object> pullSales() {
 
