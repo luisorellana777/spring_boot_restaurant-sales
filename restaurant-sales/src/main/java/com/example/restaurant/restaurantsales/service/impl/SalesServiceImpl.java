@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.restaurant.restaurantsales.config.ConfigurationValues;
 import com.example.restaurant.restaurantsales.dto.SaleDto;
@@ -72,6 +73,7 @@ public class SalesServiceImpl implements SaleService {
 	}
 
 	@Override
+	@Transactional
 	public ResponseEntity<Object> pushSales(List<SaleDto> salesDto) {
 		try {
 
