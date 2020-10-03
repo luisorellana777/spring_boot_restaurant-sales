@@ -6,23 +6,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.example.restaurant.restaurantsales.config.ConfigurationValues;
 import com.example.restaurant.restaurantsales.dto.AmountDto;
@@ -34,9 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SalesMockTest {
 
-	public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
-			MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
-
 	@Autowired
 	private ConfigurationValues configurationValues;
 
@@ -44,9 +38,16 @@ public class SalesMockTest {
 	private AmqpAdmin amqpAdmin;
 
 	@Autowired
-	private WebApplicationContext webApplicationContext;
-
+	@Qualifier("createMockMvc")
 	private MockMvc mockMvc;
+
+	@Autowired
+	@Qualifier("createObjectMapper")
+	private ObjectMapper mapper;
+
+	@Autowired
+	@Qualifier("createMediaType")
+	private MediaType mediaType;
 
 	@Test
 	@Order(3)
@@ -58,15 +59,13 @@ public class SalesMockTest {
 		saleDto.setTip(0L);
 		saleDto.addPproduct(productoDto);
 
-		ObjectMapper mapper = new ObjectMapper();
-
-		mockMvc.perform(post("/sale/").contentType(APPLICATION_JSON_UTF8).content(mapper.writeValueAsString(saleDto)))
+		mockMvc.perform(post("/sale/").contentType(mediaType).content(mapper.writeValueAsString(saleDto)))
 				.andExpect(status().isAccepted());
 
 		AmountDto value = new AmountDto(889L, 119L, 1000L);
 		saleDto.setAmounts(value);
 
-		mockMvc.perform(post("/sale/").contentType(APPLICATION_JSON_UTF8).content(mapper.writeValueAsString(saleDto)))
+		mockMvc.perform(post("/sale/").contentType(mediaType).content(mapper.writeValueAsString(saleDto)))
 				.andExpect(status().isBadRequest());
 
 	}
@@ -86,9 +85,7 @@ public class SalesMockTest {
 			sales.add(saleDto);
 		}
 
-		ObjectMapper mapper = new ObjectMapper();
-
-		mockMvc.perform(post("/sales/").contentType(APPLICATION_JSON_UTF8).content(mapper.writeValueAsString(sales)))
+		mockMvc.perform(post("/sales/").contentType(mediaType).content(mapper.writeValueAsString(sales)))
 				.andExpect(status().isAccepted());
 
 		sales.parallelStream().forEach(sale -> {
@@ -97,7 +94,7 @@ public class SalesMockTest {
 			sale.setAmounts(value);
 		});
 
-		mockMvc.perform(post("/sale/").contentType(APPLICATION_JSON_UTF8).content(mapper.writeValueAsString(sales)))
+		mockMvc.perform(post("/sale/").contentType(mediaType).content(mapper.writeValueAsString(sales)))
 				.andExpect(status().isBadRequest());
 
 	}
@@ -112,9 +109,7 @@ public class SalesMockTest {
 		saleDto.setTip(0L);
 		saleDto.addPproduct(productoDto);
 
-		ObjectMapper mapper = new ObjectMapper();
-
-		mockMvc.perform(post("/sale/").contentType(APPLICATION_JSON_UTF8).content(mapper.writeValueAsString(saleDto)))
+		mockMvc.perform(post("/sale/").contentType(mediaType).content(mapper.writeValueAsString(saleDto)))
 				.andExpect(status().isAccepted());
 
 		mockMvc.perform(get("/sale/")).andExpect(status().isOk())
@@ -138,9 +133,7 @@ public class SalesMockTest {
 			sales.add(saleDto);
 		}
 
-		ObjectMapper mapper = new ObjectMapper();
-
-		mockMvc.perform(post("/sales/").contentType(APPLICATION_JSON_UTF8).content(mapper.writeValueAsString(sales)))
+		mockMvc.perform(post("/sales/").contentType(mediaType).content(mapper.writeValueAsString(sales)))
 				.andExpect(status().isAccepted());
 
 		mockMvc.perform(get("/sales/")).andExpect(status().isOk())
@@ -161,8 +154,4 @@ public class SalesMockTest {
 		amqpAdmin.purgeQueue(configurationValues.getQueueName());
 	}
 
-	@BeforeAll
-	public void setup() {
-		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-	}
 }
