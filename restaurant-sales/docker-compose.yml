@@ -1,7 +1,23 @@
 version: '3.8'
 
 services:
-  rabbit1:
+  restaurant-sales:
+    image: luisorellanaa/restaurant-sales:0.0.1-SNAPSHOT
+    ports:
+      - "8091:8091"
+    restart: always
+    depends_on:
+      - rabbit 
+    environment:
+      RABBITMQ_HOST: "rabbit"
+      RABBITMQ_PORT: "3306"
+      RABBITMQ_USER: "admin"
+      RABBITMQ_PASSWORD: "admin"
+      RABBITMQ_VIRTUAL_HOST: "/"
+      RABBITMQ_QUEUE_NAME: "restaurant-queue"
+      RABBITMQ_EXCHANGE_NAME: "restaurant-queue-exchange"
+    
+  rabbit:
     image: rabbitmq:management
     environment:
       RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"

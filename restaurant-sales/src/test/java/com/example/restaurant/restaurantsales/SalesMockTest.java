@@ -149,7 +149,7 @@ public class SalesMockTest {
 	}
 
 	@BeforeEach
-	public void purgateUp() {
+	public void purgeUp() {
 
 		amqpAdmin.purgeQueue(configurationValues.getQueueName());
 	}
