@@ -16,27 +16,23 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Service
 public class TokenServiceImpl implements TokenService {
 
-
+	private static final String SECRET_KEY = "mySecretKey";
+	private static final String AUTHORITY = "ROLE_USER";
+	private static final String JWT_ID = "keyIdJWT";
+	private static final String JWT_CLIMER = "authorities";
+	private static final String PREFIX = "Bearer ";
 
 	public String getJWTToken(String username) {
-		String secretKey = "mySecretKey";
-		List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-				.commaSeparatedStringToAuthorityList("ROLE_USER");
-		
-		String token = Jwts
-				.builder()
-				.setId("keyIdJWT")
-				.setSubject(username)
-				.claim("authorities",
-						grantedAuthorities.stream()
-								.map(GrantedAuthority::getAuthority)
-								.collect(Collectors.toList()))
-				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 600000))
-				.signWith(SignatureAlgorithm.HS512,
-						secretKey.getBytes()).compact();
+		List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList(AUTHORITY);
 
-		return "Bearer " + token;
+		String token = Jwts.builder().setId(JWT_ID).setSubject(username)
+				.claim(JWT_CLIMER,
+						grantedAuthorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+				.setIssuedAt(new Date(System.currentTimeMillis()))
+				.setExpiration(new Date(System.currentTimeMillis() + 300000))
+				.signWith(SignatureAlgorithm.HS512, SECRET_KEY.getBytes()).compact();
+
+		return PREFIX.concat(token);
 	}
-	
+
 }

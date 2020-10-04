@@ -10,8 +10,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @Configuration
 public class TestConfig {
 
@@ -21,11 +19,6 @@ public class TestConfig {
 	@Bean
 	public MockMvc createMockMvc() {
 		return MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-	}
-
-	@Bean
-	public ObjectMapper createObjectMapper() {
-		return new ObjectMapper();
 	}
 
 	@Bean

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.Getter;
 
 @Getter
@@ -59,5 +61,10 @@ public class RabbitMQConfig {
 	@Bean
 	public MessageConverter jsonMessageConverter() {
 		return new Jackson2JsonMessageConverter();
+	}
+
+	@Bean
+	public ObjectMapper createObjectMapper() {
+		return new ObjectMapper();
 	}
 }

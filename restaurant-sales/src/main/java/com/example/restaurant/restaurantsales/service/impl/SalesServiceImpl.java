@@ -15,7 +15,7 @@ import com.example.restaurant.restaurantsales.config.ConfigurationValues;
 import com.example.restaurant.restaurantsales.dto.SaleDto;
 import com.example.restaurant.restaurantsales.exception.DataIntegrityException;
 import com.example.restaurant.restaurantsales.service.SaleService;
-import com.example.restaurant.restaurantsales.util.SaleCalculator;
+import com.example.restaurant.restaurantsales.util.SaleCalculatorUtil;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -30,7 +30,7 @@ public class SalesServiceImpl implements SaleService {
 	ConfigurationValues configurationValues;
 
 	@Autowired
-	SaleCalculator saleCalculator;
+	SaleCalculatorUtil saleCalculatorUtil;
 
 	@Override
 	public ResponseEntity<Object> pullSales() {
@@ -79,11 +79,12 @@ public class SalesServiceImpl implements SaleService {
 
 			salesDto.forEach(saleDto -> {
 
-				saleDto.setAmounts(saleCalculator.calculateAmounts(saleDto));
+				saleDto.setAmounts(saleCalculatorUtil.calculateAmounts(saleDto));
 				rabbitTemplate.convertAndSend(configurationValues.getQueueName(), saleDto);
 			});
 
-			return new ResponseEntity<>("{ \"mensaje\" : \"Ventas Almacenadas en Cola\"", HttpStatus.ACCEPTED);
+			return new ResponseEntity<>(saleCalculatorUtil.getMessage("Ventas Almacenadas en Cola."),
+					HttpStatus.ACCEPTED);
 
 		} catch (Exception ex) {
 
@@ -95,10 +96,11 @@ public class SalesServiceImpl implements SaleService {
 	public ResponseEntity<Object> pushSale(SaleDto saleDto) {
 		try {
 
-			saleDto.setAmounts(saleCalculator.calculateAmounts(saleDto));
+			saleDto.setAmounts(saleCalculatorUtil.calculateAmounts(saleDto));
 			rabbitTemplate.convertAndSend(configurationValues.getQueueName(), saleDto);
 
-			return new ResponseEntity<>("{ \"mensaje\" : \"Venta Almacenada en Cola\"", HttpStatus.ACCEPTED);
+			return new ResponseEntity<>(saleCalculatorUtil.getMessage("Venta Almacenada en Cola."),
+					HttpStatus.ACCEPTED);
 
 		} catch (Exception ex) {
 

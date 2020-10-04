@@ -14,6 +14,7 @@ import com.example.restaurant.restaurantsales.model.User;
 import com.example.restaurant.restaurantsales.model.repository.UserRepository;
 import com.example.restaurant.restaurantsales.security.service.TokenService;
 import com.example.restaurant.restaurantsales.service.LoginService;
+import com.example.restaurant.restaurantsales.util.SaleCalculatorUtil;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -30,6 +31,9 @@ public class LoginServiceImpl implements LoginService {
 	@Autowired
 	private TokenService tokenService;
 
+	@Autowired
+	private SaleCalculatorUtil saleCalculatorUtil;
+
 	@Override
 	public ResponseEntity<Object> login(String email, String password) {
 
@@ -45,8 +49,9 @@ public class LoginServiceImpl implements LoginService {
 			if (passwordEncoder.matches(password, passwordEncoded)) {
 
 				String token = tokenService.getJWTToken(email);
-				log.info("Usuario correcto. Token -> {}", token);
-				return new ResponseEntity<>("{ \"mensaje\" : \"Login\"," + " \"token\" : \"" + token + "\"}",
+				log.info("Credencial Correcto. Token -> {}", token);
+
+				return new ResponseEntity<>(saleCalculatorUtil.getMessage("Credencial Correcto.", token),
 						HttpStatus.ACCEPTED);
 			} else {
 
