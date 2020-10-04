@@ -29,7 +29,7 @@ public class TokenServiceImpl implements TokenService {
 				.claim(JWT_CLIMER,
 						grantedAuthorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 300000))
+				.setExpiration(new Date(System.currentTimeMillis() + 600000))
 				.signWith(SignatureAlgorithm.HS512, SECRET_KEY.getBytes()).compact();
 
 		return PREFIX.concat(token);

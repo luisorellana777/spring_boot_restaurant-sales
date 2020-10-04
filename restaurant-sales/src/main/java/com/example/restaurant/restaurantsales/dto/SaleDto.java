@@ -27,7 +27,7 @@ public class SaleDto {
 	@NotEmpty(message = "Se debe asignar al menos un producto")
 	@Valid
 	private List<ProductDto> products = new ArrayList<>();
-	@Null(message = "No se deben ingresar valores. Estos son auto-calculados")
+	@Null(message = "No se deben ingresar valores en la propiedad 'amounts'. Estos son auto-calculados")
 	@Valid
 	AmountDto amounts;
 	@Min(value = 0, message = "El valor de la propina debe ser valido")
