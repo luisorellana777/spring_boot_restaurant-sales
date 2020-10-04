@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: default      
+  main:
+    allow-bean-definition-overriding: true   
+  h2:
+    console:  
+      enabled: true
+server:
+  port: 8091       
+restaurant-sales:
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}         
+    port: ${RABBITMQ_PORT:5672}
+    user: ${RABBITMQ_USER:admin}
+    password: ${RABBITMQ_PASSWORD:admin}
+    virtualhost: ${RABBITMQ_VIRTUAL_HOST:/}
+    queue-name: ${RABBITMQ_QUEUE_NAME:restaurant-queue}
+    exchange-name: ${RABBITMQ_EXCHANGE_NAME:restaurant-queue-exchange}
+  values:
+    tax: 0.19  
+    neto: 1.19

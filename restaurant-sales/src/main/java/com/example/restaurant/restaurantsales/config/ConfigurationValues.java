@@ -15,24 +15,24 @@ public class ConfigurationValues {
 	@Value("${restaurant-sales.values.tax}")
 	public Float taxValue;
 
-	@Value("${rabbitmq.queue-name}")
+	@Value("${restaurant-sales.rabbitmq.queue-name}")
 	public String queueName;
 
-	@Value("${rabbitmq.exchange-name}")
+	@Value("${restaurant-sales.rabbitmq.exchange-name}")
 	private String exchangeName;
 
-	@Value("${rabbitmq.host}")
+	@Value("${restaurant-sales.rabbitmq.host}")
 	private String host;
 
-	@Value("${rabbitmq.port}")
+	@Value("${restaurant-sales.rabbitmq.port}")
 	private Integer port;
 
-	@Value("${rabbitmq.user}")
+	@Value("${restaurant-sales.rabbitmq.user}")
 	private String user;
 
-	@Value("${rabbitmq.password}")
+	@Value("${restaurant-sales.rabbitmq.password}")
 	private String password;
 
-	@Value("${rabbitmq.virtualhost}")
+	@Value("${restaurant-sales.rabbitmq.virtualhost}")
 	private String virtualhost;
 }
