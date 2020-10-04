@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.AmqpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.restaurant.restaurantsales.config.ConfigurationValues;
 import com.example.restaurant.restaurantsales.dto.SaleDto;
 import com.example.restaurant.restaurantsales.exception.DataIntegrityException;
+import com.example.restaurant.restaurantsales.exception.RabbitConnectionException;
+import com.example.restaurant.restaurantsales.repository.SalesRepository;
 import com.example.restaurant.restaurantsales.service.SaleService;
 import com.example.restaurant.restaurantsales.util.SaleCalculatorUtil;
 
@@ -24,10 +25,7 @@ import lombok.extern.log4j.Log4j2;
 public class SalesServiceImpl implements SaleService {
 
 	@Autowired
-	private RabbitTemplate rabbitTemplate;
-
-	@Autowired
-	ConfigurationValues configurationValues;
+	SalesRepository salesRepository;
 
 	@Autowired
 	SaleCalculatorUtil saleCalculatorUtil;
@@ -39,8 +37,7 @@ public class SalesServiceImpl implements SaleService {
 			List<SaleDto> salesDto = new ArrayList<SaleDto>();
 			while (true) {
 
-				SaleDto receiveAndConvert = (SaleDto) rabbitTemplate
-						.receiveAndConvert(configurationValues.getQueueName());
+				SaleDto receiveAndConvert = salesRepository.pullSale();
 
 				if (Objects.isNull(receiveAndConvert))
 					break;
@@ -62,7 +59,7 @@ public class SalesServiceImpl implements SaleService {
 	public ResponseEntity<Object> pullSale() {
 		try {
 
-			SaleDto receiveAndConvert = (SaleDto) rabbitTemplate.receiveAndConvert(configurationValues.getQueueName());
+			SaleDto receiveAndConvert = salesRepository.pullSale();
 			log.info("{}", receiveAndConvert);
 			return new ResponseEntity<>(receiveAndConvert, HttpStatus.OK);
 
@@ -80,11 +77,15 @@ public class SalesServiceImpl implements SaleService {
 			salesDto.forEach(saleDto -> {
 
 				saleDto.setAmounts(saleCalculatorUtil.calculateAmounts(saleDto));
-				rabbitTemplate.convertAndSend(configurationValues.getQueueName(), saleDto);
+				salesRepository.pushSale(saleDto);
 			});
 
 			return new ResponseEntity<>(saleCalculatorUtil.getMessage("Ventas Almacenadas en Cola."),
 					HttpStatus.ACCEPTED);
+
+		} catch (AmqpException amqEx) {
+
+			throw new RabbitConnectionException(salesDto);
 
 		} catch (Exception ex) {
 
@@ -97,10 +98,14 @@ public class SalesServiceImpl implements SaleService {
 		try {
 
 			saleDto.setAmounts(saleCalculatorUtil.calculateAmounts(saleDto));
-			rabbitTemplate.convertAndSend(configurationValues.getQueueName(), saleDto);
+			salesRepository.pushSale(saleDto);
 
 			return new ResponseEntity<>(saleCalculatorUtil.getMessage("Venta Almacenada en Cola."),
 					HttpStatus.ACCEPTED);
+
+		} catch (AmqpException amqEx) {
+
+			throw new RabbitConnectionException(saleDto);
 
 		} catch (Exception ex) {
 

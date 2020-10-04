@@ -1,6 +1,8 @@
 spring:
+  jpa:
+    show-sql: true
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE
   data:
     jpa:
       repositories:
@@ -14,13 +16,20 @@ server:
   port: 8091       
 restaurant-sales:
   rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}         
-    port: ${RABBITMQ_PORT:5672}
-    user: ${RABBITMQ_USER:admin}
-    password: ${RABBITMQ_PASSWORD:admin}
-    virtualhost: ${RABBITMQ_VIRTUAL_HOST:/}
-    queue-name: ${RABBITMQ_QUEUE_NAME:test-restaurant-queue}
-    exchange-name: ${RABBITMQ_EXCHANGE_NAME:test-restaurant-queue-exchange}
+    host: localhost
+    port: 5672
+    user: admin
+    password: admin
+    virtualhost: /
+    queue-name: test-restaurant-queue
+    exchange-name: test-restaurant-queue-exchange
   values:
     tax: 0.19  
     neto: 1.19
+  attriblog-scheduler:
+    cron-expression: 0 * * * * *
+    
+logging:
+  level:
+    org:
+      springframework: debug

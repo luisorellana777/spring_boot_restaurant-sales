@@ -17,26 +17,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable()
-			.addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
-			.authorizeRequests()
-			.antMatchers("/login").permitAll()
-			.antMatchers("/swagger-ui.html").permitAll()
-			.antMatchers("/webjars").permitAll()
-			.antMatchers("/v2/api-docs",
-                    "/configuration/ui",
-                    "/swagger-resources/**",
-                    "/configuration/security",
-                    "/swagger-ui.html",
-                    "/webjars/**",
-                    "/browser/**",
-                    "/actuator/**",
-                    "/h2-console/**").permitAll()
-			.anyRequest().authenticated();
+		http.csrf().disable().addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+				.authorizeRequests().antMatchers("/login").permitAll().antMatchers("/swagger-ui.html").permitAll()
+				.antMatchers("/webjars").permitAll()
+				.antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security",
+						"/swagger-ui.html", "/webjars/**", "/browser/**", "/actuator/**", "/h2-console/**")
+				.permitAll().anyRequest().authenticated();
 	}
-	
+
 	@Bean
 	public PasswordEncoder encoder() {
-	    return new BCryptPasswordEncoder();
+		return new BCryptPasswordEncoder();
 	}
 }

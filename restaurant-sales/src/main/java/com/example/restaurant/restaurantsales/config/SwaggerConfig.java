@@ -32,7 +32,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig extends WebMvcConfigurerAdapter {
 
-	@SuppressWarnings("unchecked")
 	@Bean
 	public Docket swaggerPlugin() {
 		return new Docket(DocumentationType.SWAGGER_2).select().paths(PathSelectors.any())

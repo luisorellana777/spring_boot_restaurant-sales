@@ -23,6 +23,8 @@ import lombok.NoArgsConstructor;
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, scope = SaleDto.class)
 public class SaleDto {
 
+	@JsonIgnore
+	private Long id;
 	@NotNull(message = "Se debe asignar al menos un producto")
 	@NotEmpty(message = "Se debe asignar al menos un producto")
 	@Valid
