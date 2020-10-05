@@ -144,7 +144,7 @@ Por otra parte, la entidad "Sale" contiene un atributo, el cual no debe ser envi
 
 Esta entidad no debe ser enviada como parte de "Sale", ya que todos estos valores son auto calculados.
 
-Además, es posible visualizar la cola de mensajería lleno a la consola de [RabbitMQ local](http://localhost:15672) con las credenciales:
+Además, es posible visualizar la cola de mensajería yendo a la consola de [RabbitMQ local](http://localhost:15672) con las credenciales:
 
 ```
 user:     admin
