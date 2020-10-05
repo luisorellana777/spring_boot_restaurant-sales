@@ -94,6 +94,7 @@ Con esto se obtendrá un mensaje, el cual contendrá un token como:
 Se debe ingresar el token en conjunto con la palabra "Bearer" en el pop up desplegado al presionar el botón "Autorize", en el costado superior derecho de [Swagger](http://localhost:8091/swagger-ui.html).
 
 Luego de esto, es posible consultar todos los endpoints anteriormente descritos.
+El token tiene una duración de 10 minutos, luego de esto es necesario renovarlo realizando un cierre de sesión, consultando el endpoint [/login]( http://localhost:8091/login), y luego ingresándolo nuevamente como autorización en [Swagger]( http://localhost:8091/swagger-ui.html).
 
 #### Descripción de Endpoints
 
