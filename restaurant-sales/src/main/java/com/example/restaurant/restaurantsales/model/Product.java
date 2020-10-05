@@ -6,6 +6,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +17,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@SQLDelete(sql = "update product set is_deleted = true where id = ?")
+@Where(clause = "is_deleted = false")
 public class Product {
 
 	@Id
@@ -26,4 +31,6 @@ public class Product {
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	private Sale sale;
+
+	private boolean isDeleted;
 }

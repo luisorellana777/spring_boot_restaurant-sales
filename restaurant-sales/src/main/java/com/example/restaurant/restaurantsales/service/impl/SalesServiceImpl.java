@@ -28,7 +28,7 @@ public class SalesServiceImpl implements SaleService {
 	SalesRepository salesRepository;
 
 	@Autowired
-	SaleCalculatorUtil saleCalculatorUtil;
+	SaleCalculatorUtil calculatorUtil;
 
 	@Override
 	public ResponseEntity<Object> pullSales() {
@@ -74,14 +74,10 @@ public class SalesServiceImpl implements SaleService {
 	public ResponseEntity<Object> pushSales(List<SaleDto> salesDto) {
 		try {
 
-			salesDto.forEach(saleDto -> {
+			salesDto.parallelStream().forEach(saleDto -> saleDto.setAmounts(calculatorUtil.calculateAmounts(saleDto)));
+			salesDto.forEach(saleDto -> salesRepository.pushSale(saleDto));
 
-				saleDto.setAmounts(saleCalculatorUtil.calculateAmounts(saleDto));
-				salesRepository.pushSale(saleDto);
-			});
-
-			return new ResponseEntity<>(saleCalculatorUtil.getMessage("Ventas Almacenadas en Cola."),
-					HttpStatus.ACCEPTED);
+			return new ResponseEntity<>(calculatorUtil.getMessage("Ventas Almacenadas en Cola."), HttpStatus.ACCEPTED);
 
 		} catch (AmqpException amqEx) {
 
@@ -97,11 +93,10 @@ public class SalesServiceImpl implements SaleService {
 	public ResponseEntity<Object> pushSale(SaleDto saleDto) {
 		try {
 
-			saleDto.setAmounts(saleCalculatorUtil.calculateAmounts(saleDto));
+			saleDto.setAmounts(calculatorUtil.calculateAmounts(saleDto));
 			salesRepository.pushSale(saleDto);
 
-			return new ResponseEntity<>(saleCalculatorUtil.getMessage("Venta Almacenada en Cola."),
-					HttpStatus.ACCEPTED);
+			return new ResponseEntity<>(calculatorUtil.getMessage("Venta Almacenada en Cola."), HttpStatus.ACCEPTED);
 
 		} catch (AmqpException amqEx) {
 

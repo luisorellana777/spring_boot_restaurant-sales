@@ -1,17 +1,23 @@
 spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${RDS_HOSTNAME:localhost}:${RDS_PORT:3306}/${RDS_DB_NAME:restaurant_sales_db}
+    username: ${RDS_USERNAME:restaurant_sale_user}
+    password: ${RDS_PASSWORD:restaurant_sale_pass}
+    initialization-mode: always
   jpa:
     show-sql: true
-  datasource:
-    url: jdbc:h2:mem:testdb
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL57Dialect
   data:
     jpa:
       repositories:
         bootstrap-mode: default      
   main:
     allow-bean-definition-overriding: true   
-  h2:
-    console:  
-      enabled: true
 server:
   port: 8091       
 restaurant-sales:
@@ -32,4 +38,4 @@ restaurant-sales:
 logging:
   level:
     org:
-      springframework: debug
+      springframework: INFO

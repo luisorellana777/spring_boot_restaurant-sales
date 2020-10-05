@@ -8,6 +8,7 @@ services:
     restart: always
     depends_on:
       - rabbit 
+      - mysql 
     environment:
       RABBITMQ_HOST: "rabbit"
       RABBITMQ_PORT: "3306"
@@ -16,6 +17,11 @@ services:
       RABBITMQ_VIRTUAL_HOST: "/"
       RABBITMQ_QUEUE_NAME: "restaurant-queue"
       RABBITMQ_EXCHANGE_NAME: "restaurant-queue-exchange"
+      RDS_HOSTNAME: "mysql"
+      RDS_PORT: "3306"
+      RDS_DB_NAME: "restaurant_sales_db"
+      RDS_USERNAME: "restaurant_sale_user"
+      RDS_PASSWORD: "restaurant_sale_pass"
     
   rabbit:
     image: rabbitmq:management
@@ -25,9 +31,26 @@ services:
       RABBITMQ_DEFAULT_PASS: "admin"
       RABBITMQ_DEFAULT_VHOST: "/"
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
     volumes:
       - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
       - ./rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
       - ./rabbitmq/logs:/var/log/rabbitmq/log
+      
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_USER: "root"
+      MYSQL_ROOT_PASSWORD: "restaurant_sale_root_pass" 
+      MYSQL_USER: "restaurant_sale_user"
+      MYSQL_PASSWORD: "restaurant_sale_pass"
+      MYSQL_DATABASE: "restaurant_sales_db"
+    volumes:
+      - mysql-database-data-volume:/var/lib/mysql
+
+volumes:
+  mysql-database-data-volume:
