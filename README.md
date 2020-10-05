@@ -144,7 +144,12 @@ Por otra parte, la entidad "Sale" contiene un atributo, el cual no debe ser envi
 
 Esta entidad no debe ser enviada como parte de "Sale", ya que todos estos valores son auto calculados.
 
-Además, es posible visualizar la cola de mensajería lleno a la consola de [RabbitMQ local](http://localhost:15672)
+Además, es posible visualizar la cola de mensajería lleno a la consola de [RabbitMQ local](http://localhost:15672) con las credenciales:
+
+```
+user:     admin
+password: admin
+```
 
 # Tolerancia a Fallos
 En el caso de que se deseé realizar un push a la cola, y RabbitMQ no se encuentra disponible, el servicio realizara un control de excepción, el cual persiste la venta en MySQL con un estado determinado.
