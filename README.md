@@ -16,6 +16,7 @@ Este documento describe los siguientes temas concernientes a la ejecución y mod
   - Docker
   - Maven
   - [Lombok](https://projectlombok.org/)
+  
 Se debe considerar que el único elemento necesario para ejecutarlo sin compilación local es Docker. Con respecto a los demás elementos, estos son necesarios en la ejecución del proyecto con compilación local.
 
 ## Ejecución sin compilación local
