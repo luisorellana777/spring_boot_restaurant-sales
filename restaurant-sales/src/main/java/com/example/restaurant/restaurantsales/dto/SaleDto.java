@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -31,9 +30,11 @@ public class SaleDto {
 	private List<ProductDto> products = new ArrayList<>();
 	@Null(message = "No se deben ingresar valores en la propiedad 'amounts'. Estos son auto-calculados")
 	@Valid
-	AmountDto amounts;
-	@Min(value = 0, message = "El valor de la propina debe ser valido")
-	private Long tip;
+	private AmountDto amounts;
+
+	@NotNull(message = "Se debe asignar a un camarero")
+	@Valid
+	private WaiterDto waiter;
 
 	@JsonIgnore
 	public void addPproduct(ProductDto dto) {

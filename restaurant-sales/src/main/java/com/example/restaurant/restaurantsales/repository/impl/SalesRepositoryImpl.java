@@ -48,6 +48,7 @@ public class SalesRepositoryImpl implements SalesRepository {
 		salesDto.forEach(saleDto -> {
 			Sale saleEntity = modelMapper.map(saleDto, Sale.class);
 			saleEntity.getAmounts().setSale(saleEntity);
+			saleEntity.getWaiter().setSale(saleEntity);
 			saleEntity.getProducts().parallelStream().forEach(product -> {
 				product.setSale(saleEntity);
 			});
@@ -77,6 +78,7 @@ public class SalesRepositoryImpl implements SalesRepository {
 
 		Sale saleEntity = modelMapper.map(saleDto, Sale.class);
 		saleEntity.getAmounts().setSale(saleEntity);
+		saleEntity.getWaiter().setSale(saleEntity);
 		saleEntity.getProducts().parallelStream().forEach(product -> {
 			product.setSale(saleEntity);
 		});

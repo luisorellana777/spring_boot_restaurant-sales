@@ -25,6 +25,7 @@ import com.example.restaurant.restaurantsales.config.ConfigurationValues;
 import com.example.restaurant.restaurantsales.dto.AmountDto;
 import com.example.restaurant.restaurantsales.dto.ProductDto;
 import com.example.restaurant.restaurantsales.dto.SaleDto;
+import com.example.restaurant.restaurantsales.dto.WaiterDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -55,8 +56,10 @@ public class SalesMockTest {
 
 		SaleDto saleDto = new SaleDto();
 		ProductDto productoDto = new ProductDto("SKU", 1000L);
+		WaiterDto waiterDto = new WaiterDto(0L, "00012348-k", "Luis", "Orellana");
+		saleDto.setWaiter(waiterDto);
 
-		saleDto.setTip(0L);
+		saleDto.getWaiter().setTip(0L);
 		saleDto.addPproduct(productoDto);
 
 		mockMvc.perform(post("/sale/").contentType(mediaType).content(mapper.writeValueAsString(saleDto)))
@@ -75,11 +78,14 @@ public class SalesMockTest {
 	public void multipleCreationAndValidation() throws Exception {
 
 		List<SaleDto> sales = new ArrayList<>();
+		WaiterDto waiterDto = new WaiterDto(0L, "00012348-k", "Luis", "Orellana");
+
 		for (int i = 1; i < 101; i++) {
 
 			SaleDto saleDto = new SaleDto();
+			saleDto.setWaiter(waiterDto);
 			ProductDto productoDto = new ProductDto("SKU", (long) (Math.random() * 1000 * i));
-			saleDto.setTip((long) (productoDto.getPrice() / (productoDto.getPrice() + i)));
+			saleDto.getWaiter().setTip((long) (productoDto.getPrice() / (productoDto.getPrice() + i)));
 			saleDto.addPproduct(productoDto);
 
 			sales.add(saleDto);
@@ -104,9 +110,11 @@ public class SalesMockTest {
 	public void singleCreationAndReturnAndValidation() throws Exception {
 
 		SaleDto saleDto = new SaleDto();
+		WaiterDto waiterDto = new WaiterDto(0L, "00012348-k", "Luis", "Orellana");
 		ProductDto productoDto = new ProductDto("SKU", 1000L);
+		saleDto.setWaiter(waiterDto);
 
-		saleDto.setTip(0L);
+		saleDto.getWaiter().setTip(0L);
 		saleDto.addPproduct(productoDto);
 
 		mockMvc.perform(post("/sale/").contentType(mediaType).content(mapper.writeValueAsString(saleDto)))
@@ -122,12 +130,15 @@ public class SalesMockTest {
 	@Order(2)
 	public void multipleCreationAndReturnAndValidation() throws Exception {
 
+		WaiterDto waiterDto = new WaiterDto(0L, "00012348-k", "Luis", "Orellana");
+
 		List<SaleDto> sales = new ArrayList<>();
 		for (int i = 1; i < 101; i++) {
 
 			SaleDto saleDto = new SaleDto();
+			saleDto.setWaiter(waiterDto);
 			ProductDto productoDto = new ProductDto("SKU", (long) (Math.random() * 1000 * i));
-			saleDto.setTip((long) (productoDto.getPrice() / (productoDto.getPrice() + i)));
+			saleDto.getWaiter().setTip((long) (productoDto.getPrice() / (productoDto.getPrice() + i)));
 			saleDto.addPproduct(productoDto);
 
 			sales.add(saleDto);

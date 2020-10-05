@@ -1,14 +1,9 @@
 package com.example.restaurant.restaurantsales.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.SQLDelete;
@@ -22,23 +17,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@SQLDelete(sql = "update sale set is_deleted = true where id = ?")
+@SQLDelete(sql = "update waiter set is_deleted = true where id = ?")
 @Where(clause = "is_deleted = false")
-public class Sale {
+public class Waiter {
 
 	@Id
 	@GeneratedValue
 	private Long id;
 
-	@OneToMany(mappedBy = "sale", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private List<Product> products = new ArrayList<>();
+	private Long tip;
 
-	@OneToOne(mappedBy = "sale", cascade = CascadeType.ALL)
-	private Amount amounts;
+	private String rut;
 
-	@OneToOne(mappedBy = "sale", cascade = CascadeType.ALL)
-	private Waiter waiter;
+	private String fisrtName;
+
+	private String lastName;
+
+	@OneToOne(cascade = CascadeType.ALL)
+	private Sale sale;
 
 	private boolean isDeleted;
-
 }

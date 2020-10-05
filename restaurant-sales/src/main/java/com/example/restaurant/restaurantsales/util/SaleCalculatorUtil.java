@@ -36,7 +36,7 @@ public class SaleCalculatorUtil {
 
 		Long tax = (long) (configurationValues.getTaxValue() * neto);
 
-		total = total + saleDto.getTip();
+		total = total + saleDto.getWaiter().getTip();
 		return new AmountDto(neto, tax, total);
 	}
 
