@@ -9,6 +9,7 @@ Este documento describe los siguientes temas concernientes a la ejecución y mod
   - Ejecución con compilación local
   - Ejecución de pruebas unitarias
   - Comportamiento general del flujo
+  - Tolerancia a Fallos
 
 ## Prerrequisitos
 
@@ -142,7 +143,7 @@ Por otra parte, la entidad "Sale" contiene un atributo, el cual no debe ser envi
 ```
 Esta entidad no debe ser enviada como parte de "Sale", ya que todos estos valores son auto calculados.
 
-#### Tolerancia a Fallos
+# Tolerancia a Fallos
 En el caso de que se deseé realizar un push a la cola, y RabbitMQ no se encuentra disponible, el servicio realizara un control de excepción, el cual persiste la venta en MySQL con un estado determinado.
 Por otra parte, un scheduler es ejecutado de manera paralela (al momento de la auto configuración de spring), el cual consulta de manera frecuente (una vez por hora, de lunes a sábado) las ventas persistidas en Mysql.
 En el caso de que este proceso encuentre una venta disponible, intentara realizar un push a la cola. Si esta acción es exitosa, se elimina el registro(venta) de Mysql de manera suave (hibernate soft delete), modificando el estado de la entidad.
