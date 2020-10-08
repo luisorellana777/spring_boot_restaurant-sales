@@ -30,7 +30,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), "Fallo de Validacion",
 				ex.getBindingResult().toString());
 
-		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(UserNotFoundException.class)
