@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,24 +24,28 @@ public class SaleController {
 	@GetMapping("/sale")
 	public ResponseEntity<Object> pullSale() {
 
-		return saleService.pullSale();
+		SaleDto saleDto = saleService.pullSale();
+		return new ResponseEntity<>(saleDto, HttpStatus.OK);
 	}
 
 	@GetMapping("/sales")
 	public ResponseEntity<Object> pullSales() {
 
-		return saleService.pullSales();
+		List<SaleDto> saleDto = saleService.pullSales();
+		return new ResponseEntity<>(saleDto, HttpStatus.OK);
 	}
 
 	@PostMapping("/sale")
 	public ResponseEntity<Object> pushSale(@Valid @RequestBody SaleDto saleDto) {
 
-		return saleService.pushSale(saleDto);
+		String message = saleService.pushSale(saleDto);
+		return new ResponseEntity<>(message, HttpStatus.ACCEPTED);
 	}
 
 	@PostMapping("/sales")
 	public ResponseEntity<Object> pushSales(@Valid @RequestBody List<SaleDto> salesDto) {
 
-		return saleService.pushSales(salesDto);
+		String message = saleService.pushSales(salesDto);
+		return new ResponseEntity<>(message, HttpStatus.ACCEPTED);
 	}
 }

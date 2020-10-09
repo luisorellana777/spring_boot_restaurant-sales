@@ -10,6 +10,7 @@ import com.example.restaurant.restaurantsales.config.ConfigurationValues;
 import com.example.restaurant.restaurantsales.dto.AmountDto;
 import com.example.restaurant.restaurantsales.dto.ProductDto;
 import com.example.restaurant.restaurantsales.dto.SaleDto;
+import com.example.restaurant.restaurantsales.exception.DataIntegrityException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -51,14 +52,21 @@ public class SaleCalculatorUtil {
 		return mapper.writeValueAsString(new MessageInnerClass());
 	}
 
-	public String getMessage(final String gotMessage, final String gotToken) throws JsonProcessingException {
+	public String getMessage(final String gotMessage, final String gotToken) {
 
-		@SuppressWarnings("unused")
-		class MessageInnerClass {
-			public String message = gotMessage;
-			public String token = gotToken;
+		try {
+
+			@SuppressWarnings("unused")
+			class MessageInnerClass {
+				public String message = gotMessage;
+				public String token = gotToken;
+			}
+
+			return mapper.writeValueAsString(new MessageInnerClass());
+
+		} catch (JsonProcessingException ex) {
+
+			throw new DataIntegrityException(ex.getMessage());
 		}
-
-		return mapper.writeValueAsString(new MessageInnerClass());
 	}
 }

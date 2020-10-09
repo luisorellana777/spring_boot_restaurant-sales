@@ -3,12 +3,9 @@ package com.example.restaurant.restaurantsales.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.restaurant.restaurantsales.exception.DataIntegrityException;
 import com.example.restaurant.restaurantsales.exception.UserNotFoundException;
 import com.example.restaurant.restaurantsales.model.User;
 import com.example.restaurant.restaurantsales.model.repository.UserRepository;
@@ -35,32 +32,24 @@ public class LoginServiceImpl implements LoginService {
 	private SaleCalculatorUtil saleCalculatorUtil;
 
 	@Override
-	public ResponseEntity<Object> login(String email, String password) {
+	public String login(String email, String password) {
 
-		try {
+		List<User> user = userRepository.findByName(email);
+		if (user.isEmpty()) {
+			throw new UserNotFoundException("Usuario(Email) o Clave No Encontrado");
+		}
 
-			List<User> user = userRepository.findByName(email);
-			if (user.isEmpty()) {
-				throw new UserNotFoundException("Usuario(Email) o Clave No Encontrado");
-			}
+		String passwordEncoded = user.iterator().next().getPassword();
 
-			String passwordEncoded = user.iterator().next().getPassword();
+		if (passwordEncoder.matches(password, passwordEncoded)) {
 
-			if (passwordEncoder.matches(password, passwordEncoded)) {
+			String token = tokenService.getJWTToken(email);
+			log.info("Credencial Correcto. Token -> {}", token);
 
-				String token = tokenService.getJWTToken(email);
-				log.info("Credencial Correcto. Token -> {}", token);
+			return saleCalculatorUtil.getMessage("Credencial Correcto.", token);
+		} else {
 
-				return new ResponseEntity<>(saleCalculatorUtil.getMessage("Credencial Correcto.", token),
-						HttpStatus.ACCEPTED);
-			} else {
-
-				throw new UserNotFoundException("Usuario(Email) o Clave No Encontrado");
-			}
-
-		} catch (Exception ex) {
-
-			throw new DataIntegrityException(ex.getMessage());
+			throw new UserNotFoundException("Usuario(Email) o Clave No Encontrado");
 		}
 
 	}

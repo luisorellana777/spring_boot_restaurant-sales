@@ -6,8 +6,6 @@ import java.util.Objects;
 
 import org.springframework.amqp.AmqpException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +29,7 @@ public class SalesServiceImpl implements SaleService {
 	SaleCalculatorUtil calculatorUtil;
 
 	@Override
-	public ResponseEntity<Object> pullSales() {
+	public List<SaleDto> pullSales() {
 		try {
 
 			List<SaleDto> salesDto = new ArrayList<SaleDto>();
@@ -44,10 +42,9 @@ public class SalesServiceImpl implements SaleService {
 
 				salesDto.add(receiveAndConvert);
 				log.info("{}", receiveAndConvert);
-
 			}
 
-			return new ResponseEntity<>(salesDto, HttpStatus.OK);
+			return salesDto;
 
 		} catch (Exception ex) {
 
@@ -56,13 +53,14 @@ public class SalesServiceImpl implements SaleService {
 	}
 
 	@Override
-	public ResponseEntity<Object> pullSale() {
+	public SaleDto pullSale() {
 		try {
 
-			//TODO: El metodo del repository no se deberia llamar igual a este metdo... No se entiende porque no es claro.
+			// TODO: El metodo del repository no se deberia llamar igual a este metdo... No
+			// se entiende porque no es claro.
 			SaleDto receiveAndConvert = salesRepository.pullSale();
 			log.info("{}", receiveAndConvert);
-			return new ResponseEntity<>(receiveAndConvert, HttpStatus.OK);
+			return receiveAndConvert;
 
 		} catch (Exception ex) {
 
@@ -72,13 +70,13 @@ public class SalesServiceImpl implements SaleService {
 
 	@Override
 	@Transactional
-	public ResponseEntity<Object> pushSales(List<SaleDto> salesDto) {
+	public String pushSales(List<SaleDto> salesDto) {
 		try {
 
 			salesDto.parallelStream().forEach(saleDto -> saleDto.setAmounts(calculatorUtil.calculateAmounts(saleDto)));
 			salesDto.forEach(saleDto -> salesRepository.pushSale(saleDto));
 
-			return new ResponseEntity<>(calculatorUtil.getMessage("Ventas Almacenadas en Cola."), HttpStatus.ACCEPTED);
+			return calculatorUtil.getMessage("Ventas Almacenadas en Cola.");
 
 		} catch (AmqpException amqEx) {
 
@@ -91,13 +89,13 @@ public class SalesServiceImpl implements SaleService {
 	}
 
 	@Override
-	public ResponseEntity<Object> pushSale(SaleDto saleDto) {
+	public String pushSale(SaleDto saleDto) {
 		try {
 
 			saleDto.setAmounts(calculatorUtil.calculateAmounts(saleDto));
 			salesRepository.pushSale(saleDto);
 
-			return new ResponseEntity<>(calculatorUtil.getMessage("Venta Almacenada en Cola."), HttpStatus.ACCEPTED);
+			return calculatorUtil.getMessage("Venta Almacenada en Cola.");
 
 		} catch (AmqpException amqEx) {
 
