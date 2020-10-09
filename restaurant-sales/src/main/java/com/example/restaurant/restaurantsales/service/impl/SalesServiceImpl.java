@@ -56,8 +56,6 @@ public class SalesServiceImpl implements SaleService {
 	public SaleDto pullSale() {
 		try {
 
-			// TODO: El metodo del repository no se deberia llamar igual a este metdo... No
-			// se entiende porque no es claro.
 			SaleDto receiveAndConvert = salesRepository.pullSale();
 			log.info("{}", receiveAndConvert);
 			return receiveAndConvert;
